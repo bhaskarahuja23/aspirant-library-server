@@ -1,0 +1,371 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aspirant Library | Seat Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .form-row--dates {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 1rem;
+      align-items: end;
+    }
+    .seat.male { background-color: #3b82f6; }
+    .seat.female { background-color: #ec4899; }
+    .seat .days-left {
+      font-size: 0.75rem;
+      opacity: 0.7;
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+    }
+    .admin-table .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn.small {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    /* Receipt Styles */
+    .receipt-panel {
+      padding: 0;
+      background: #f9fafb;
+    }
+    
+    .receipt-printable {
+      background: #fff;
+      max-width: 800px;
+      margin: 0 auto;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 2rem;
+    }
+    
+    .receipt-actions {
+      max-width: 800px;
+      margin: 1rem auto;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      padding: 0 2rem;
+    }
+    
+    @media screen {
+      .receipt-details {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 2rem;
+      }
+    }
+    
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #receiptPrintable, #receiptPrintable * {
+        visibility: visible;
+      }
+      #receiptPrintable {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        max-width: 800px;
+      }
+      .receipt-actions {
+        display: none !important;
+      }
+      .receipt-details {
+        border: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="brand">
+  <img src="assets/logo.jpg" alt="Aspirant Library logo" class="brand__logo" />
+      <div>
+        <p class="brand__title">Aspirant Library</p>
+        <p class="brand__tagline">Learn. Explore. Achieve.</p>
+      </div>
+    </div>
+    <div class="top-bar__contact">
+      <a class="contact-link" href="tel:+919991418414">Call: +91 99914 18414</a>
+      <a class="contact-link" href="https://maps.app.goo.gl/VPeGqPzQ6b4gKm616" target="_blank" rel="noopener">
+        Visit: Bighar Rd, Fatehabad
+      </a>
+      <span class="badge">Open 24x7</span>
+    </div>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="hero__content">
+      <p class="eyebrow">Aspirant Library</p>
+      <h1>Peaceful self-study space with effortless seat booking.</h1>
+      <p class="lede">Manage memberships, assign seats, and send branded WhatsApp confirmations in seconds. Build focus, not spreadsheets.</p>
+      <div class="hero__cta">
+        <a class="btn primary" href="#seat-manager">Assign a Seat</a>
+        <a class="btn ghost" href="#features">Explore Features</a>
+      </div>
+      <div class="contact-cards">
+        <div class="contact-card">
+          <p class="label">Owner</p>
+          <p class="value">Chirag Kumar</p>
+          <a href="tel:+919991418414" class="contact-link">+91 99914 18414</a>
+        </div>
+        <div class="contact-card">
+          <p class="label">Address</p>
+          <a href="https://maps.app.goo.gl/VPeGqPzQ6b4gKm616" class="contact-link" target="_blank" rel="noopener">
+            Bighar Rd - Near PWD Office - Fatehabad
+          </a>
+          <p class="muted">Open 24x7</p>
+        </div>
+      </div>
+    </div>
+    <div class="hero__card" aria-label="Live seat snapshot">
+      <p class="hero__card-label">Seats Occupied</p>
+      <p class="hero__card-value" id="hero-seat-count">0 / 75</p>
+      <div class="hero__card-meter">
+        <span id="hero-seat-meter"></span>
+      </div>
+      <p class="hero__card-note">Updated <span id="hero-last-update">just now</span></p>
+    </div>
+  </header>
+
+  <main>
+    <section id="features" class="section grid">
+      <article>
+        <h2>Smart seat management</h2>
+        <p>Track occupancy, availability, and membership plans at a glance. Every update saves locally for quick recall.</p>
+      </article>
+      <article>
+        <h2>Instant digital receipts</h2>
+        <p>Create branded receipts that can be downloaded as a PDF or copied directly into WhatsApp chats.</p>
+
+        </article>
+        <article>
+          <h2>WhatsApp confirmations</h2>
+          <p>Automatically compose a ready-to-send WhatsApp message with the student's receipt details.</p>
+        </article>
+          </section>
+
+    <section id="seat-manager" class="section">
+      <div class="panel">
+        <h2>Seat Assignment</h2>
+        <form id="seat-form" autocomplete="off">
+          <div class="form-row">
+            <label for="studentName">Student name</label>
+            <input id="studentName" name="studentName" placeholder="Aditi Sharma" required />
+          </div>
+          <div class="form-row">
+            <label for="phoneNumber">WhatsApp number</label>
+            <div class="input-group" style="display: flex;">
+              <span style="padding: 8px 12px; background: #f3f4f6; border: 1px solid #d1d5db; border-right: none; border-radius: 4px 0 0 4px;">+91</span>
+              <input id="phoneNumber" name="phoneNumber" style="border-left: none; border-radius: 0 4px 4px 0;" placeholder="98765 43210" pattern="[0-9 ]{10,11}" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="seatNumber">Seat number</label>
+            <select id="seatNumber" name="seatNumber" required></select>
+          </div>
+          <div class="form-row">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div class="form-row form-row--dates">
+            <div>
+              <label for="startDate">Start date</label>
+              <input id="startDate" name="startDate" type="date" required />
+            </div>
+            <div>
+              <label for="endDate">End date</label>
+              <input id="endDate" name="endDate" type="date" required />
+            </div>
+            <button type="button" id="setOneMonth" class="btn ghost small">Set 1 Month</button>
+          </div>
+          <div class="form-row">
+            <label for="plan">Plan</label>
+            <select id="plan" name="plan" required>
+              <option value="Monthly">Monthly</option>
+              <option value="Quarterly">Quarterly</option>
+              <option value="Half Yearly">Half Yearly</option>
+              <option value="Yearly">Yearly</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="amount">Fee collected (₹)</label>
+            <input id="amount" name="amount" type="number" min="0" step="50" placeholder="1500" />
+          </div>
+          <button type="submit" class="btn primary stretch">Assign Seat &amp; Generate Receipt</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h2>Live Seat Map</h2>
+        <div id="seat-grid" class="seat-grid" aria-live="polite"></div>
+        <div class="legend" style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+          <span class="legend__item"><span class="dot available"></span>Available</span>
+          <span class="legend__item"><span class="dot" style="background-color: #3b82f6;"></span>Male</span>
+          <span class="legend__item"><span class="dot" style="background-color: #ec4899;"></span>Female</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="receipt" class="section">
+      <div class="panel receipt-panel">
+        <div class="receipt-printable" id="receiptPrintable">
+          <header class="receipt-header" style="max-width: 800px; margin: 0 auto; background: #fff;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #e5e7eb; padding-bottom: 1.5rem;">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <img src="assets/logo.jpg" alt="Aspirant Library logo" style="width: 64px; height: auto;" />
+                <div>
+                  <h2 style="margin: 0; font-size: 1.5rem; color: #1f2937;">Aspirant Library</h2>
+                  <p style="margin: 0.25rem 0 0 0; color: #6b7280;">Learn. Explore. Achieve.</p>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <h3 style="margin: 0; font-size: 1rem; color: #4b5563;">Digital Receipt</h3>
+                <p style="margin: 0.25rem 0 0 0; color: #6b7280;">Owner: Chirag Kumar</p>
+                <a href="tel:+919991418414" style="color: #3b82f6; text-decoration: none;">+91 99914 18414</a>
+              </div>
+            </div>
+            <p style="margin: 0.75rem 0 0 0; color: #6b7280; text-align: center;">
+              <a href="https://maps.app.goo.gl/VPeGqPzQ6b4gKm616" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">
+                Bighar Rd, near PWD office, Jagjivan Pura, Fatehabad • Open 24x7
+              </a>
+            </p>
+          </header>
+          <div id="receipt-body">
+            <p class="muted">Assign a seat to preview the receipt.</p>
+          </div>
+        </div>
+        <div class="receipt-actions">
+          <button id="downloadReceiptPdf" class="btn ghost" disabled>Download PDF</button>
+          <button id="sendWhatsApp" class="btn primary" disabled>Send via WhatsApp</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin" class="section">
+      <div class="panel admin-panel">
+        <div class="admin-header">
+          <div>
+            <p class="eyebrow">Admin Console</p>
+            <h2>Release or Reassign Seats</h2>
+          </div>
+          <button type="button" class="btn ghost" id="refreshSeats">Refresh Seats</button>
+        </div>
+        <p class="muted">Seats sync through the shared API so multiple admins stay up to date.</p>
+        <div id="admin-list" class="admin-list">
+          <p class="muted">No seats assigned yet.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; <span id="year"></span> Aspirant Library - Designed for focused exam prep.</p>
+  </footer>
+
+  <template id="receipt-template">
+    <div class="receipt-details" style="max-width: 800px; margin: 0 auto; background: #fff;">
+      <!-- Top Section with ID and Date -->
+      <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
+        <div style="flex: 1;">
+          <h3 style="margin: 0; color: #1f2937; font-size: 1.25rem;">Receipt ID: <span data-field="receiptId" style="font-weight: normal;"></span></h3>
+        </div>
+        <div style="text-align: right;">
+          <p style="margin: 0; color: #6b7280;">Issued: <span data-field="issuedAt"></span></p>
+        </div>
+      </div>
+
+      <!-- Main Details Table -->
+      <table style="width: 100%; border-collapse: separate; border-spacing: 0 0.5rem;">
+        <tr>
+          <td style="width: 25%; padding: 0.75rem; background: #f3f4f6; border-radius: 4px;">Student Name</td>
+          <td style="width: 25%; padding: 0.75rem;" data-field="studentName"></td>
+          <td style="width: 25%; padding: 0.75rem; background: #f3f4f6; border-radius: 4px;">Seat Number</td>
+          <td style="width: 25%; padding: 0.75rem;" data-field="seatNumber"></td>
+        </tr>
+        <tr>
+          <td style="padding: 0.75rem; background: #f3f4f6; border-radius: 4px;">Plan Type</td>
+          <td data-field="plan" style="padding: 0.75rem;"></td>
+          <td style="padding: 0.75rem; background: #f3f4f6; border-radius: 4px;">Amount Paid</td>
+          <td data-field="amount" style="padding: 0.75rem;"></td>
+        </tr>
+        <tr>
+          <td style="padding: 0.75rem; background: #f3f4f6; border-radius: 4px;">Start Date</td>
+          <td data-field="startDate" style="padding: 0.75rem;"></td>
+          <td style="padding: 0.75rem; background: #f3f4f6; border-radius: 4px;">End Date</td>
+          <td data-field="endDate" style="padding: 0.75rem;"></td>
+        </tr>
+        <tr>
+          <td style="padding: 0.75rem; background: #f3f4f6; border-radius: 4px;">WhatsApp</td>
+          <td colspan="3" data-field="phoneNumber" style="padding: 0.75rem;"></td>
+        </tr>
+      </table>
+
+      <!-- Footer Note -->
+      <div style="margin-top: 2rem; padding-top: 1rem; border-top: 2px solid #e5e7eb; text-align: center;">
+        <p style="margin: 0; color: #6b7280; font-size: 0.875rem;">
+          Keep this receipt for entry verification or present the WhatsApp confirmation at the front desk.
+        </p>
+      </div>
+    </div>
+  </template>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <script>
+    window.ASPIRANT_API_BASE = 'http://localhost:4000/api';
+    
+    // Initialize PDF libraries
+    window.addEventListener('DOMContentLoaded', function() {
+      if (!window.html2canvas) {
+        console.error('html2canvas not loaded');
+        alert('PDF generation library failed to load. Please refresh the page.');
+      }
+      if (!window.jspdf) {
+        console.error('jsPDF not loaded');
+        alert('PDF generation library failed to load. Please refresh the page.');
+      }
+    });
+  </script>
+  
+  <script src="app.js"></script>
+  
+  <!-- Fallback print function -->
+  <script>
+    function printReceipt() {
+      const receipt = document.getElementById('receiptPrintable');
+      if (!receipt) return;
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write('<html><head><title>Print Receipt</title>');
+      printWindow.document.write('<link rel="stylesheet" href="style.css">');
+      printWindow.document.write('</head><body>');
+      printWindow.document.write(receipt.outerHTML);
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+    }
+  </script>
+</body>
+</html>
+
