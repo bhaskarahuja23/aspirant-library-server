@@ -8,6 +8,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve static files (HTML, CSS, JS, assets)
+app.use(express.static(path.join(__dirname)));
+
 // ... your routes: app.get('/api/seats', ...), etc.
 
 
@@ -59,10 +62,6 @@ const validateAssignPayload = (body) => {
     throw new Error(`Missing required fields: ${missing.join(', ')}`);
   }
 };
-
-const app = express();
-app.use(cors());
-app.use(express.json());
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', updatedAt: new Date().toISOString() });
