@@ -79,7 +79,9 @@ const SeatService = {
     }
     let response;
     try {
-      response = await fetch(`${API_BASE_URL}${path}`, config);
+      // `API_BASE` is the defined fallback (from top of file). Use that instead
+      // of the undefined `API_BASE_URL` which caused network errors in prod.
+      response = await fetch(`${API_BASE}${path}`, config);
     } catch (error) {
       throw new Error('Could not reach the shared seat server. Check your connection.');
     }
