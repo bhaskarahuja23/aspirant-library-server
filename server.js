@@ -3,6 +3,14 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// ... your routes: app.get('/api/seats', ...), etc.
+
+
 const PORT = process.env.PORT || 4000;
 const TOTAL_SEATS = Number(process.env.TOTAL_SEATS) || 75;
 const DATA_DIR = path.join(__dirname, 'data');

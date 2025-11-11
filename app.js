@@ -1,5 +1,7 @@
 ﻿const TOTAL_SEATS = 75;
-const API_BASE_URL = window.ASPIRANT_API_BASE || 'http://localhost:4000/api';
+const API_BASE =
+  window.ASPIRANT_API_BASE ||
+  'https://aspirant-library-server.onrender.com/api';
 const LIBRARY = {
   name: 'Aspirant Library',
   tagline: 'Learn. Explore. Achieve.',
