@@ -1,81 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aspirant Library | Seat Management</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    .form-row--dates {
-      display: grid;
-      grid-template-columns: 1fr 1fr auto;
-      gap: 1rem;
-      align-items: end;
-    }
-    .seat.male { background-color: #3b82f6; }
-    .seat.female { background-color: #ec4899; }
-    .seat .days-left {
-      font-size: 0.75rem;
-      opacity: 0.7;
-      position: absolute;
-      bottom: 2px;
-      right: 2px;
-    }
-    .admin-table .actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-    .btn.small {
-      padding: 0.25rem 0.5rem;
-      font-size: 0.875rem;
-    }
-    
-    /* Receipt Styles - improved for print and PDF export */
-    .receipt-panel {
-      padding: 0;
-      background: #f8fafc;
-    }
+  <template id="receipt-template">
+    <div id="receiptPrintable" style="max-width:600px; margin:0 auto; padding:28px; background:#fff; font-family: Arial, sans-serif; color:#222; box-sizing:border-box;">
+      <style>
+        .rcpt-header { text-align:center; margin-bottom:18px; }
+        .rcpt-title { margin:0; font-size:22px; font-weight:700; }
+        .rcpt-sub { margin:4px 0 0 0; color:#666; font-size:12px }
+        .rcpt-meta { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px }
+        .rcpt-label { font-size:11px; color:#888; font-weight:700; letter-spacing:0.6px }
+        .rcpt-value { margin-top:6px; font-size:15px; font-weight:700 }
+        .rcpt-sep { height:1px; background:#eee; margin:14px 0 }
+        .rcpt-field { display:flex; justify-content:space-between; align-items:center; padding:10px 0 }
+        .rcpt-field + .rcpt-field { border-top:1px solid #f2f2f2 }
+        .rcpt-left { max-width:68%; }
+        .rcpt-right { text-align:right; max-width:30%; }
+        .rcpt-footer { text-align:center; margin-top:18px; color:#777; font-size:12px }
+      </style>
 
-    .receipt-printable {
-      background: #ffffff;
-      max-width: 820px;
-      margin: 0 auto;
-      border-radius: 6px;
-      padding: 28px 32px;
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-      color: #0f172a;
-      box-shadow: none;
-    }
+      <div class="rcpt-header">
+        <h2 class="rcpt-title">RECEIPT</h2>
+        <div class="rcpt-sub">Aspirant Library</div>
+      </div>
 
-    .receipt-actions {
-      max-width: 820px;
-      margin: 1rem auto;
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      padding: 0 2rem;
-    }
+      <div class="rcpt-meta">
+        <div>
+          <div class="rcpt-label">Receipt ID</div>
+          <div class="rcpt-value" data-field="receiptId"></div>
+        </div>
+        <div style="text-align:right;">
+          <div class="rcpt-label">Issued</div>
+          <div class="rcpt-value" data-field="issuedAt"></div>
+        </div>
+      </div>
 
-    .receipt-header h2, .receipt-header h3 {
-      font-weight: 600;
-      letter-spacing: 0.2px;
-    }
+      <div class="rcpt-sep"></div>
 
-    .receipt-details {
-      padding: 18px 0;
-      border-radius: 4px;
-    }
+      <div class="rcpt-field">
+        <div class="rcpt-left">
+          <div class="rcpt-label">Student Name</div>
+          <div class="rcpt-value" data-field="studentName"></div>
+        </div>
+        <div class="rcpt-right">
+          <div class="rcpt-label">Seat</div>
+          <div class="rcpt-value" data-field="seatNumber"></div>
+        </div>
+      </div>
 
-    .receipt-table td {
-      padding: 10px 12px;
-      vertical-align: middle;
-      color: #374151;
-    }
+      <div class="rcpt-field">
+        <div class="rcpt-left">
+          <div class="rcpt-label">Plan</div>
+          <div class="rcpt-value" data-field="plan"></div>
+        </div>
+        <div class="rcpt-right">
+          <div class="rcpt-label">Amount</div>
+          <div class="rcpt-value" data-field="amount" style="color:#219653"></div>
+        </div>
+      </div>
 
-    .muted { color: #6b7280; }
+      <div class="rcpt-field">
+        <div class="rcpt-left">
+          <div class="rcpt-label">Valid From</div>
+          <div class="rcpt-value" data-field="startDate"></div>
+        </div>
+        <div class="rcpt-right">
+          <div class="rcpt-label">Valid Till</div>
+          <div class="rcpt-value" data-field="endDate"></div>
+        </div>
+      </div>
+
+      <div class="rcpt-sep"></div>
+
+      <div style="padding-top:8px">
+        <div class="rcpt-label">Contact</div>
+        <div class="rcpt-value" data-field="phoneNumber" style="margin-top:6px"></div>
+      </div>
+
+      <div class="rcpt-footer">Please retain this receipt for record and entry verification.</div>
+    </div>
+  </template>
 
     /* Try to make print output clean and page-sized */
     @page { size: A4; margin: 12mm; }
