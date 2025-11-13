@@ -8,9 +8,5 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PERSISTENT_STORAGE_DIR
-        value: /opt/render/project/src/persistent
-    disk:
-      name: seat-data
-      mountPath: /opt/render/project/src/persistent
-      sizeGB: 1
+      - key: MONGODB_URI
+        sync: false
