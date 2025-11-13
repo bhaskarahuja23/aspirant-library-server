@@ -16,8 +16,14 @@ app.use(express.static(path.join(__dirname)));
 
 const PORT = process.env.PORT || 4000;
 const TOTAL_SEATS = Number(process.env.TOTAL_SEATS) || 75;
-const DATA_DIR = path.join(__dirname, 'data');
+
+// Use /opt/render/project/data for Render persistent disk, fallback to local ./data
+const DATA_DIR = process.env.PERSISTENT_STORAGE_DIR 
+  ? path.join(process.env.PERSISTENT_STORAGE_DIR, 'data')
+  : path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'seats.json');
+
+console.log(`Using data directory: ${DATA_DIR}`);
 
 const createSeat = (number) => ({
   number,
