@@ -1,17 +1,26 @@
 const mongoose = require('mongoose');
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/aspirant-library';
+const MONGODB_URI = process.env.MONGODB_URI;
+let isConnected = false;
 
 const connectDB = async () => {
+  if (!MONGODB_URI) {
+    console.log('⚠ MONGODB_URI not set - using in-memory storage (data will not persist)');
+    return false;
+  }
+  
   try {
     await mongoose.connect(MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('✓ MongoDB connected successfully');
+    isConnected = true;
+    console.log('✓ MongoDB connected successfully - data will persist');
+    return true;
   } catch (err) {
     console.error('✗ MongoDB connection error:', err.message);
-    // Don't exit - fallback to in-memory if needed
+    console.log('⚠ Using in-memory storage (data will not persist)');
+    return false;
   }
 };
 
@@ -31,12 +40,36 @@ const seatSchema = new mongoose.Schema({
 
 const Seat = mongoose.model('Seat', seatSchema);
 
-// Initialize seats in database
+// In-memory fallback storage
+let inMemorySeats = [];
+
+// Initialize seats in database or memory
 const initializeSeats = async (totalSeats = 75) => {
+  if (!isConnected) {
+    // Use in-memory storage
+    if (inMemorySeats.length === 0) {
+      console.log(`Initializing ${totalSeats} seats in memory...`);
+      inMemorySeats = Array.from({ length: totalSeats }, (_, idx) => ({
+        number: idx + 1,
+        studentName: null,
+        phoneNumber: null,
+        gender: null,
+        plan: null,
+        startDate: null,
+        endDate: null,
+        amount: null,
+        assignedAt: null,
+        receiptId: null,
+      }));
+      console.log(`✓ Initialized ${totalSeats} seats in memory`);
+    }
+    return;
+  }
+  
   try {
     const count = await Seat.countDocuments();
     if (count === 0) {
-      console.log(`Initializing ${totalSeats} seats...`);
+      console.log(`Initializing ${totalSeats} seats in database...`);
       const seats = Array.from({ length: totalSeats }, (_, idx) => ({
         number: idx + 1,
         studentName: null,
@@ -50,11 +83,18 @@ const initializeSeats = async (totalSeats = 75) => {
         receiptId: null,
       }));
       await Seat.insertMany(seats);
-      console.log(`✓ Initialized ${totalSeats} seats`);
+      console.log(`✓ Initialized ${totalSeats} seats in database`);
     }
   } catch (err) {
     console.error('Error initializing seats:', err.message);
   }
 };
 
-module.exports = { connectDB, Seat, initializeSeats };
+// Helper functions for in-memory storage
+const getInMemorySeats = () => inMemorySeats;
+const setInMemorySeat = (seatNumber, data) => {
+  const seat = inMemorySeats.find(s => s.number === seatNumber);
+  if (seat) Object.assign(seat, data);
+};
+
+module.exports = { connectDB, Seat, initializeSeats, isConnected: () => isConnected, getInMemorySeats, setInMemorySeat };

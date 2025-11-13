@@ -1,6 +1,6 @@
 ﻿const express = require('express');
 const cors = require('cors');
-const { connectDB, Seat, initializeSeats } = require('./db');
+const { connectDB, Seat, initializeSeats, isConnected, getInMemorySeats, setInMemorySeat } = require('./db');
 
 const app = express();
 
@@ -27,6 +27,12 @@ app.get('/api/health', (req, res) => {
 
 app.get('/api/seats', async (req, res) => {
   try {
+    if (!isConnected()) {
+      // Use in-memory storage
+      const seats = getInMemorySeats();
+      return res.json({ seats, updatedAt: new Date().toISOString() });
+    }
+    
     const seats = await Seat.find().sort({ number: 1 }).lean();
     res.json({ seats, updatedAt: new Date().toISOString() });
   } catch (error) {
@@ -39,6 +45,32 @@ app.post('/api/seats/assign', async (req, res) => {
   try {
     validateAssignPayload(req.body || {});
     const seatNumber = Number(req.body.seatNumber);
+    
+    if (!isConnected()) {
+      // Use in-memory storage
+      const seats = getInMemorySeats();
+      const seat = seats.find(s => s.number === seatNumber);
+      if (!seat) {
+        return res.status(404).json({ message: `Seat ${seatNumber} not found.` });
+      }
+      if (seat.studentName) {
+        return res.status(409).json({ message: `Seat ${seatNumber} is already assigned to ${seat.studentName}.` });
+      }
+      
+      Object.assign(seat, {
+        studentName: req.body.studentName,
+        phoneNumber: req.body.phoneNumber,
+        gender: req.body.gender,
+        plan: req.body.plan,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+        amount: req.body.amount ?? null,
+        assignedAt: req.body.issuedAt,
+        receiptId: req.body.receiptId,
+      });
+      
+      return res.json({ seat, seats, updatedAt: new Date().toISOString() });
+    }
     
     const seat = await Seat.findOne({ number: seatNumber });
     if (!seat) {
@@ -73,6 +105,32 @@ app.post('/api/seats/release', async (req, res) => {
     const seatNumber = Number(req.body?.seatNumber);
     if (!seatNumber) {
       return res.status(400).json({ message: 'seatNumber is required.' });
+    }
+    
+    if (!isConnected()) {
+      // Use in-memory storage
+      const seats = getInMemorySeats();
+      const seat = seats.find(s => s.number === seatNumber);
+      if (!seat) {
+        return res.status(404).json({ message: `Seat ${seatNumber} not found.` });
+      }
+      if (!seat.studentName) {
+        return res.status(409).json({ message: `Seat ${seatNumber} is already available.` });
+      }
+      
+      Object.assign(seat, {
+        studentName: null,
+        phoneNumber: null,
+        gender: null,
+        plan: null,
+        startDate: null,
+        endDate: null,
+        amount: null,
+        assignedAt: null,
+        receiptId: null,
+      });
+      
+      return res.json({ seat, seats, updatedAt: new Date().toISOString() });
     }
     
     const seat = await Seat.findOne({ number: seatNumber });
