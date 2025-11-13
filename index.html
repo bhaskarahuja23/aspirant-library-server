@@ -283,280 +283,85 @@
 
   <template id="receipt-template">
     <div id="receiptPrintable" style="
-      width: 8.5in;
-      height: 11in;
-      padding: 0.75in;
+      width: 100%;
+      max-width: 600px;
+      padding: 40px;
       margin: 0 auto;
-      background: #ffffff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #1a1a1a;
-      line-height: 1.6;
-      box-sizing: border-box;
+      background: white;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
     ">
-      <!-- Header with Logo and Title -->
-      <div style="
-        text-align: center;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1.25rem;
-        border-bottom: 2px solid #2563eb;
-      ">
-        <h1 style="
-          margin: 0 0 0.25rem 0;
-          font-size: 2rem;
-          font-weight: 700;
-          color: #1f2937;
-          letter-spacing: -0.5px;
-        ">RECEIPT</h1>
-        <p style="
-          margin: 0;
-          font-size: 0.95rem;
-          color: #6b7280;
-          font-weight: 500;
-          letter-spacing: 0.5px;
-        ">Aspirant Library Seat Allocation Certificate</p>
+      <!-- Header -->
+      <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px;">
+        <h2 style="margin: 0; font-size: 28px; font-weight: bold;">RECEIPT</h2>
+        <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Aspirant Library</p>
       </div>
 
-      <!-- Receipt Metadata (ID & Date) -->
-      <div style="
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 1.75rem;
-        padding: 1.25rem;
-        background: linear-gradient(135deg, #eff6ff 0%, #f0f4ff 100%);
-        border-left: 4px solid #2563eb;
-        border-radius: 6px;
-      ">
+      <!-- Receipt ID and Date -->
+      <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
         <div>
-          <p style="
-            margin: 0 0 0.375rem 0;
-            font-size: 0.75rem;
-            color: #6b7280;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 1px;
-          ">Receipt ID</p>
-          <p style="
-            margin: 0;
-            font-size: 1.5rem;
-            color: #1f2937;
-            font-weight: 700;
-            font-family: 'Courier New', monospace;
-          " data-field="receiptId"></p>
+          <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">RECEIPT ID</p>
+          <p style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold;" data-field="receiptId"></p>
         </div>
         <div style="text-align: right;">
-          <p style="
-            margin: 0 0 0.375rem 0;
-            font-size: 0.75rem;
-            color: #6b7280;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 1px;
-          ">Date Issued</p>
-          <p style="
-            margin: 0;
-            font-size: 1rem;
-            color: #1f2937;
-            font-weight: 600;
-          " data-field="issuedAt"></p>
+          <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">DATE</p>
+          <p style="margin: 5px 0 0 0; font-size: 14px; font-weight: bold;" data-field="issuedAt"></p>
         </div>
       </div>
 
-      <!-- Content Grid - Clean Two-Column Layout -->
-      <div style="margin-bottom: 1.75rem;">
-        <!-- Row 1: Student & Seat -->
-        <div style="
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1.25rem;
-          margin-bottom: 1.25rem;
-        ">
-          <div style="
-            padding: 1.125rem;
-            background: #f9fafb;
-            border-left: 5px solid #2563eb;
-            border-radius: 5px;
-          ">
-            <p style="
-              margin: 0 0 0.5rem 0;
-              font-size: 0.7rem;
-              color: #6b7280;
-              text-transform: uppercase;
-              font-weight: 700;
-              letter-spacing: 0.8px;
-            ">Full Name</p>
-            <p style="
-              margin: 0;
-              font-size: 1.125rem;
-              color: #1f2937;
-              font-weight: 600;
-            " data-field="studentName"></p>
-          </div>
-          <div style="
-            padding: 1.125rem;
-            background: #f9fafb;
-            border-left: 5px solid #2563eb;
-            border-radius: 5px;
-          ">
-            <p style="
-              margin: 0 0 0.5rem 0;
-              font-size: 0.7rem;
-              color: #6b7280;
-              text-transform: uppercase;
-              font-weight: 700;
-              letter-spacing: 0.8px;
-            ">Seat Number</p>
-            <p style="
-              margin: 0;
-              font-size: 1.125rem;
-              color: #1f2937;
-              font-weight: 600;
-            " data-field="seatNumber"></p>
-          </div>
-        </div>
+      <!-- Separator -->
+      <div style="border-bottom: 1px solid #ccc; margin-bottom: 20px;"></div>
 
-        <!-- Row 2: Plan & Amount -->
-        <div style="
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1.25rem;
-          margin-bottom: 1.25rem;
-        ">
-          <div style="
-            padding: 1.125rem;
-            background: #f9fafb;
-            border-left: 5px solid #10b981;
-            border-radius: 5px;
-          ">
-            <p style="
-              margin: 0 0 0.5rem 0;
-              font-size: 0.7rem;
-              color: #6b7280;
-              text-transform: uppercase;
-              font-weight: 700;
-              letter-spacing: 0.8px;
-            ">Plan Type</p>
-            <p style="
-              margin: 0;
-              font-size: 1.125rem;
-              color: #1f2937;
-              font-weight: 600;
-            " data-field="plan"></p>
-          </div>
-          <div style="
-            padding: 1.125rem;
-            background: #f9fafb;
-            border-left: 5px solid #10b981;
-            border-radius: 5px;
-          ">
-            <p style="
-              margin: 0 0 0.5rem 0;
-              font-size: 0.7rem;
-              color: #6b7280;
-              text-transform: uppercase;
-              font-weight: 700;
-              letter-spacing: 0.8px;
-            ">Amount Paid</p>
-            <p style="
-              margin: 0;
-              font-size: 1.125rem;
-              color: #10b981;
-              font-weight: 700;
-            " data-field="amount"></p>
-          </div>
-        </div>
-
-        <!-- Row 3: Dates -->
-        <div style="
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1.25rem;
-        ">
-          <div style="
-            padding: 1.125rem;
-            background: #f9fafb;
-            border-left: 5px solid #f59e0b;
-            border-radius: 5px;
-          ">
-            <p style="
-              margin: 0 0 0.5rem 0;
-              font-size: 0.7rem;
-              color: #6b7280;
-              text-transform: uppercase;
-              font-weight: 700;
-              letter-spacing: 0.8px;
-            ">Valid From</p>
-            <p style="
-              margin: 0;
-              font-size: 1.125rem;
-              color: #1f2937;
-              font-weight: 600;
-            " data-field="startDate"></p>
-          </div>
-          <div style="
-            padding: 1.125rem;
-            background: #f9fafb;
-            border-left: 5px solid #f59e0b;
-            border-radius: 5px;
-          ">
-            <p style="
-              margin: 0 0 0.5rem 0;
-              font-size: 0.7rem;
-              color: #6b7280;
-              text-transform: uppercase;
-              font-weight: 700;
-              letter-spacing: 0.8px;
-            ">Valid Till</p>
-            <p style="
-              margin: 0;
-              font-size: 1.125rem;
-              color: #1f2937;
-              font-weight: 600;
-            " data-field="endDate"></p>
-          </div>
-        </div>
+      <!-- Student Details -->
+      <div style="margin-bottom: 15px;">
+        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">STUDENT NAME</p>
+        <p style="margin: 5px 0 0 0; font-size: 15px; font-weight: bold;" data-field="studentName"></p>
       </div>
 
-      <!-- Contact Section -->
-      <div style="
-        padding: 1.25rem;
-        background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
-        border-left: 4px solid #f59e0b;
-        border-radius: 6px;
-        margin-bottom: 1.75rem;
-      ">
-        <p style="
-          margin: 0 0 0.5rem 0;
-          font-size: 0.7rem;
-          color: #92400e;
-          text-transform: uppercase;
-          font-weight: 700;
-          letter-spacing: 0.8px;
-        ">Contact Number</p>
-        <p style="
-          margin: 0;
-          font-size: 1.125rem;
-          color: #1f2937;
-          font-weight: 600;
-          font-family: 'Courier New', monospace;
-        " data-field="phoneNumber"></p>
+      <!-- Seat Number -->
+      <div style="margin-bottom: 15px;">
+        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">SEAT NUMBER</p>
+        <p style="margin: 5px 0 0 0; font-size: 15px; font-weight: bold;" data-field="seatNumber"></p>
+      </div>
+
+      <!-- Plan Type -->
+      <div style="margin-bottom: 15px;">
+        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">PLAN TYPE</p>
+        <p style="margin: 5px 0 0 0; font-size: 15px; font-weight: bold;" data-field="plan"></p>
+      </div>
+
+      <!-- Amount Paid -->
+      <div style="margin-bottom: 15px;">
+        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">AMOUNT PAID</p>
+        <p style="margin: 5px 0 0 0; font-size: 15px; font-weight: bold; color: #27ae60;" data-field="amount"></p>
+      </div>
+
+      <!-- Valid From -->
+      <div style="margin-bottom: 15px;">
+        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">VALID FROM</p>
+        <p style="margin: 5px 0 0 0; font-size: 15px; font-weight: bold;" data-field="startDate"></p>
+      </div>
+
+      <!-- Valid Till -->
+      <div style="margin-bottom: 20px;">
+        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">VALID TILL</p>
+        <p style="margin: 5px 0 0 0; font-size: 15px; font-weight: bold;" data-field="endDate"></p>
+      </div>
+
+      <!-- Separator -->
+      <div style="border-bottom: 1px solid #ccc; margin-bottom: 20px;"></div>
+
+      <!-- Contact -->
+      <div style="margin-bottom: 20px;">
+        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">CONTACT NUMBER</p>
+        <p style="margin: 5px 0 0 0; font-size: 14px; font-weight: bold;" data-field="phoneNumber"></p>
       </div>
 
       <!-- Footer -->
-      <div style="
-        padding-top: 1.25rem;
-        border-top: 2px solid #e5e7eb;
-        text-align: center;
-        font-size: 0.85rem;
-        color: #6b7280;
-        line-height: 1.5;
-      ">
-        <p style="margin: 0 0 0.5rem 0; font-weight: 500;">
-          Please retain this receipt for record and entry verification.
-        </p>
-        <p style="margin: 0; font-size: 0.8rem; color: #9ca3af;">
-          Digitally issued by Aspirant Library Seat Manager | All rights reserved
-        </p>
+      <div style="text-align: center; padding-top: 15px; border-top: 2px solid #333;">
+        <p style="margin: 0; font-size: 12px; color: #666;">Please retain this receipt for your records</p>
+        <p style="margin: 10px 0 0 0; font-size: 11px; color: #999;">Aspirant Library Seat Manager</p>
       </div>
     </div>
   </template>
