@@ -1,83 +1,14 @@
-  <template id="receipt-template">
-    <div id="receiptPrintable" style="max-width:600px; margin:0 auto; padding:28px; background:#fff; font-family: Arial, sans-serif; color:#222; box-sizing:border-box;">
-      <style>
-        .rcpt-header { text-align:center; margin-bottom:18px; }
-        .rcpt-title { margin:0; font-size:22px; font-weight:700; }
-        .rcpt-sub { margin:4px 0 0 0; color:#666; font-size:12px }
-        .rcpt-meta { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px }
-        .rcpt-label { font-size:11px; color:#888; font-weight:700; letter-spacing:0.6px }
-        .rcpt-value { margin-top:6px; font-size:15px; font-weight:700 }
-        .rcpt-sep { height:1px; background:#eee; margin:14px 0 }
-        .rcpt-field { display:flex; justify-content:space-between; align-items:center; padding:10px 0 }
-        .rcpt-field + .rcpt-field { border-top:1px solid #f2f2f2 }
-        .rcpt-left { max-width:68%; }
-        .rcpt-right { text-align:right; max-width:30%; }
-        .rcpt-footer { text-align:center; margin-top:18px; color:#777; font-size:12px }
-      </style>
-
-      <div class="rcpt-header">
-        <h2 class="rcpt-title">RECEIPT</h2>
-        <div class="rcpt-sub">Aspirant Library</div>
-      </div>
-
-      <div class="rcpt-meta">
-        <div>
-          <div class="rcpt-label">Receipt ID</div>
-          <div class="rcpt-value" data-field="receiptId"></div>
-        </div>
-        <div style="text-align:right;">
-          <div class="rcpt-label">Issued</div>
-          <div class="rcpt-value" data-field="issuedAt"></div>
-        </div>
-      </div>
-
-      <div class="rcpt-sep"></div>
-
-      <div class="rcpt-field">
-        <div class="rcpt-left">
-          <div class="rcpt-label">Student Name</div>
-          <div class="rcpt-value" data-field="studentName"></div>
-        </div>
-        <div class="rcpt-right">
-          <div class="rcpt-label">Seat</div>
-          <div class="rcpt-value" data-field="seatNumber"></div>
-        </div>
-      </div>
-
-      <div class="rcpt-field">
-        <div class="rcpt-left">
-          <div class="rcpt-label">Plan</div>
-          <div class="rcpt-value" data-field="plan"></div>
-        </div>
-        <div class="rcpt-right">
-          <div class="rcpt-label">Amount</div>
-          <div class="rcpt-value" data-field="amount" style="color:#219653"></div>
-        </div>
-      </div>
-
-      <div class="rcpt-field">
-        <div class="rcpt-left">
-          <div class="rcpt-label">Valid From</div>
-          <div class="rcpt-value" data-field="startDate"></div>
-        </div>
-        <div class="rcpt-right">
-          <div class="rcpt-label">Valid Till</div>
-          <div class="rcpt-value" data-field="endDate"></div>
-        </div>
-      </div>
-
-      <div class="rcpt-sep"></div>
-
-      <div style="padding-top:8px">
-        <div class="rcpt-label">Contact</div>
-        <div class="rcpt-value" data-field="phoneNumber" style="margin-top:6px"></div>
-      </div>
-
-      <div class="rcpt-footer">Please retain this receipt for record and entry verification.</div>
-    </div>
-  </template>
-
-    /* Try to make print output clean and page-sized */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Seat manager for Aspirant Library with WhatsApp confirmations" />
+  <title>Aspirant Library Seat Manager</title>
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+/* Try to make print output clean and page-sized */
     @page { size: A4; margin: 12mm; }
 
     @media print {
@@ -281,90 +212,88 @@
     <p>&copy; <span id="year"></span> <span id="footerName">Aspirant Library</span> - Designed for focused exam prep.</p>
   </footer>
 
-  <template id="receipt-template">
-    <div id="receiptPrintable" style="
-      width: 100%;
-      max-width: 600px;
-      padding: 40px;
-      margin: 0 auto;
-      background: white;
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      color: #333;
-    ">
-      <!-- Header -->
-      <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px;">
-        <h2 style="margin: 0; font-size: 28px; font-weight: bold;">RECEIPT</h2>
-        <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">Aspirant Library</p>
+<template id="receipt-template">
+    <div id="receiptPrintable" style="max-width:600px; margin:0 auto; padding:28px; background:#fff; font-family: Arial, sans-serif; color:#222; box-sizing:border-box;">
+      <style>
+        .rcpt-header { text-align:center; margin-bottom:18px; }
+        .rcpt-title { margin:0; font-size:22px; font-weight:700; }
+        .rcpt-sub { margin:4px 0 0 0; color:#666; font-size:12px }
+        .rcpt-meta { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px }
+        .rcpt-label { font-size:11px; color:#888; font-weight:700; letter-spacing:0.6px }
+        .rcpt-value { margin-top:6px; font-size:15px; font-weight:700 }
+        .rcpt-sep { height:1px; background:#eee; margin:14px 0 }
+        .rcpt-field { display:flex; justify-content:space-between; align-items:center; padding:10px 0 }
+        .rcpt-field + .rcpt-field { border-top:1px solid #f2f2f2 }
+        .rcpt-left { max-width:68%; }
+        .rcpt-right { text-align:right; max-width:30%; }
+        .rcpt-footer { text-align:center; margin-top:18px; color:#777; font-size:12px }
+      </style>
+
+      <div class="rcpt-header">
+        <h2 class="rcpt-title">RECEIPT</h2>
+        <div class="rcpt-sub">Aspirant Library</div>
       </div>
 
-      <!-- Receipt ID and Date -->
-      <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+      <div class="rcpt-meta">
         <div>
-          <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">RECEIPT ID</p>
-          <p style="margin: 5px 0 0 0; font-size: 16px; font-weight: bold;" data-field="receiptId"></p>
+          <div class="rcpt-label">Receipt ID</div>
+          <div class="rcpt-value" data-field="receiptId"></div>
         </div>
-        <div style="text-align: right;">
-          <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">DATE</p>
-          <p style="margin: 5px 0 0 0; font-size: 14px; font-weight: bold;" data-field="issuedAt"></p>
+        <div style="text-align:right;">
+          <div class="rcpt-label">Issued</div>
+          <div class="rcpt-value" data-field="issuedAt"></div>
         </div>
       </div>
 
-      <!-- Separator -->
-      <div style="border-bottom: 1px solid #ccc; margin-bottom: 20px;"></div>
+      <div class="rcpt-sep"></div>
 
-      <!-- Student Details -->
-      <div style="margin-bottom: 15px;">
-        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">STUDENT NAME</p>
-        <p style="margin: 5px 0 0 0; font-size: 15px; font-weight: bold;" data-field="studentName"></p>
+      <div class="rcpt-field">
+        <div class="rcpt-left">
+          <div class="rcpt-label">Student Name</div>
+          <div class="rcpt-value" data-field="studentName"></div>
+        </div>
+        <div class="rcpt-right">
+          <div class="rcpt-label">Seat</div>
+          <div class="rcpt-value" data-field="seatNumber"></div>
+        </div>
       </div>
 
-      <!-- Seat Number -->
-      <div style="margin-bottom: 15px;">
-        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">SEAT NUMBER</p>
-        <p style="margin: 5px 0 0 0; font-size: 15px; font-weight: bold;" data-field="seatNumber"></p>
+      <div class="rcpt-field">
+        <div class="rcpt-left">
+          <div class="rcpt-label">Plan</div>
+          <div class="rcpt-value" data-field="plan"></div>
+        </div>
+        <div class="rcpt-right">
+          <div class="rcpt-label">Amount</div>
+          <div class="rcpt-value" data-field="amount" style="color:#219653"></div>
+        </div>
       </div>
 
-      <!-- Plan Type -->
-      <div style="margin-bottom: 15px;">
-        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">PLAN TYPE</p>
-        <p style="margin: 5px 0 0 0; font-size: 15px; font-weight: bold;" data-field="plan"></p>
+      <div class="rcpt-field">
+        <div class="rcpt-left">
+          <div class="rcpt-label">Valid From</div>
+          <div class="rcpt-value" data-field="startDate"></div>
+        </div>
+        <div class="rcpt-right">
+          <div class="rcpt-label">Valid Till</div>
+          <div class="rcpt-value" data-field="endDate"></div>
+        </div>
       </div>
 
-      <!-- Amount Paid -->
-      <div style="margin-bottom: 15px;">
-        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">AMOUNT PAID</p>
-        <p style="margin: 5px 0 0 0; font-size: 15px; font-weight: bold; color: #27ae60;" data-field="amount"></p>
+      <div class="rcpt-sep"></div>
+
+      <div style="padding-top:8px">
+        <div class="rcpt-label">Contact</div>
+        <div class="rcpt-value" data-field="phoneNumber" style="margin-top:6px"></div>
       </div>
 
-      <!-- Valid From -->
-      <div style="margin-bottom: 15px;">
-        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">VALID FROM</p>
-        <p style="margin: 5px 0 0 0; font-size: 15px; font-weight: bold;" data-field="startDate"></p>
-      </div>
-
-      <!-- Valid Till -->
-      <div style="margin-bottom: 20px;">
-        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">VALID TILL</p>
-        <p style="margin: 5px 0 0 0; font-size: 15px; font-weight: bold;" data-field="endDate"></p>
-      </div>
-
-      <!-- Separator -->
-      <div style="border-bottom: 1px solid #ccc; margin-bottom: 20px;"></div>
-
-      <!-- Contact -->
-      <div style="margin-bottom: 20px;">
-        <p style="margin: 0; font-size: 11px; color: #999; font-weight: bold;">CONTACT NUMBER</p>
-        <p style="margin: 5px 0 0 0; font-size: 14px; font-weight: bold;" data-field="phoneNumber"></p>
-      </div>
-
-      <!-- Footer -->
-      <div style="text-align: center; padding-top: 15px; border-top: 2px solid #333;">
-        <p style="margin: 0; font-size: 12px; color: #666;">Please retain this receipt for your records</p>
-        <p style="margin: 10px 0 0 0; font-size: 11px; color: #999;">Aspirant Library Seat Manager</p>
-      </div>
+      <div class="rcpt-footer">Please retain this receipt for record and entry verification.</div>
     </div>
   </template>
+
+
+
+  
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

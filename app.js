@@ -606,43 +606,85 @@ const downloadReceiptPdf = async () => {
   try {
     setStatus('Generating PDF...', 'info');
 
-    // First try HTML2Canvas + jsPDF approach
-    if (window.html2canvas && window.jspdf) {
-      const element = document.getElementById('receiptPrintable');
-      const canvas = await window.html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: true
-      });
-
-      const pdf = new window.jspdf.jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: 'a4'
-      });
-
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const ratio = Math.min(pdfWidth / canvas.width, pdfHeight / canvas.height);
-      
-      pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width * ratio, canvas.height * ratio);
-      pdf.save(`${latestReceipt?.receiptId || 'receipt'}.pdf`);
-      
-      setStatus('PDF downloaded. Attach it in WhatsApp or print it.', 'success');
+    if (!latestReceipt) {
+      setStatus('Please assign a seat first to generate a receipt.', 'error');
       return;
     }
 
-    // Fallback to print if PDF generation fails
-    console.warn('PDF libraries not available, falling back to print');
-    setStatus('Opening print dialog...', 'info');
-    window.printReceipt();
-    setStatus('Print dialog opened. Please save as PDF if needed.', 'success');
+    // Check if libraries are loaded
+    if (!window.html2canvas) {
+      throw new Error('html2canvas library not loaded. Please refresh the page.');
+    }
+    
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      throw new Error('jsPDF library not loaded. Please refresh the page.');
+    }
+
+    const element = document.getElementById('receiptPrintable');
+    if (!element) {
+      throw new Error('Receipt element not found');
+    }
+
+    setStatus('Capturing receipt...', 'info');
+
+    // Generate canvas from HTML
+    const canvas = await window.html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight
+    });
+
+    setStatus('Creating PDF...', 'info');
+
+    // Create PDF - FIXED: properly destructure jsPDF
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: 'a4'
+    });
+
+    const imgData = canvas.toDataURL('image/png', 1.0);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    
+    // Calculate dimensions to fit page with margins
+    const margin = 40;
+    const availableWidth = pdfWidth - (margin * 2);
+    const availableHeight = pdfHeight - (margin * 2);
+    
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    const ratio = Math.min(availableWidth / imgWidth, availableHeight / imgHeight);
+    const finalWidth = imgWidth * ratio;
+    const finalHeight = imgHeight * ratio;
+    
+    // Center the image
+    const x = (pdfWidth - finalWidth) / 2;
+    const y = margin;
+    
+    pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+    
+    const filename = `${latestReceipt.receiptId || 'receipt'}.pdf`;
+    pdf.save(filename);
+    
+    setStatus(`✅ PDF "${filename}" downloaded successfully!`, 'success');
 
   } catch (err) {
-    console.error('Receipt generation failed:', err);
-    setStatus('Could not generate PDF. Trying print dialog...', 'error');
-    window.printReceipt();
+    console.error('PDF generation error:', err);
+    setStatus(`PDF error: ${err.message}. Opening print dialog...`, 'error');
+    
+    // Fallback to print after a short delay
+    setTimeout(() => {
+      if (typeof window.printReceipt === 'function') {
+        window.printReceipt();
+      } else {
+        window.print();
+      }
+    }, 1000);
   }
 };
 
