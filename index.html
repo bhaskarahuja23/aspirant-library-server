@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -33,86 +33,85 @@
       font-size: 0.875rem;
     }
     
-    /* Receipt Styles */
+    /* Receipt Styles - improved for print and PDF export */
     .receipt-panel {
       padding: 0;
-      background: #f9fafb;
+      background: #f8fafc;
     }
-    
+
     .receipt-printable {
-      background: #fff;
-      max-width: 800px;
+      background: #ffffff;
+      max-width: 820px;
       margin: 0 auto;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      padding: 2rem;
+      border-radius: 6px;
+      padding: 28px 32px;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      color: #0f172a;
+      box-shadow: none;
     }
-    
+
     .receipt-actions {
-      max-width: 800px;
+      max-width: 820px;
       margin: 1rem auto;
       display: flex;
       gap: 1rem;
       justify-content: flex-end;
       padding: 0 2rem;
     }
-    
-    @media screen {
-      .receipt-details {
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 2rem;
-      }
+
+    .receipt-header h2, .receipt-header h3 {
+      font-weight: 600;
+      letter-spacing: 0.2px;
     }
-    
+
+    .receipt-details {
+      padding: 18px 0;
+      border-radius: 4px;
+    }
+
+    .receipt-table td {
+      padding: 10px 12px;
+      vertical-align: middle;
+      color: #374151;
+    }
+
+    .muted { color: #6b7280; }
+
+    /* Try to make print output clean and page-sized */
+    @page { size: A4; margin: 12mm; }
+
     @media print {
-      body * {
-        visibility: hidden;
-      }
-      #receiptPrintable, #receiptPrintable * {
-        visibility: visible;
-      }
-      #receiptPrintable {
-        position: fixed;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        max-width: 800px;
-      }
-      .receipt-actions {
-        display: none !important;
-      }
-      .receipt-details {
-        border: none !important;
-      }
+      body { background: #fff; }
+      body * { visibility: hidden; }
+      #receiptPrintable, #receiptPrintable * { visibility: visible; }
+      #receiptPrintable { position: absolute; left: 0; top: 0; width: 100%; max-width: none; margin: 0; padding: 0; }
+      .receipt-actions { display: none !important; }
+      .receipt-printable { box-shadow: none !important; border-radius: 0 !important; padding: 12mm !important; }
+      a { color: inherit; text-decoration: none; }
     }
   </style>
 </head>
 <body>
   <div class="top-bar">
     <div class="brand">
-  <img src="assets/logo.jpg" alt="Aspirant Library logo" class="brand__logo" />
+      <img src="assets/logo.jpg" alt="Aspirant Library logo" class="brand__logo" id="brandLogo" />
       <div>
-        <p class="brand__title">Aspirant Library</p>
-        <p class="brand__tagline">Learn. Explore. Achieve.</p>
+        <p class="brand__title" id="brandName">Aspirant Library</p>
+        <p class="brand__tagline" id="brandTagline">Learn. Explore. Achieve.</p>
       </div>
     </div>
     <div class="top-bar__contact">
-      <a class="contact-link" href="tel:+919991418414">Call: +91 99914 18414</a>
-      <a class="contact-link" href="https://maps.app.goo.gl/VPeGqPzQ6b4gKm616" target="_blank" rel="noopener">
+      <a class="contact-link" id="topPhoneLink" href="tel:+919991418414">Call: +91 99914 18414</a>
+      <a class="contact-link" id="topAddressLink" href="https://maps.app.goo.gl/VPeGqPzQ6b4gKm616" target="_blank" rel="noopener">
         Visit: Bighar Rd, Fatehabad
       </a>
-      <span class="badge">Open 24x7</span>
-    </div>
+      <span class="badge" id="topHours">Open 24x7</span>
     </div>
   </div>
 
   <header class="hero">
     <div class="hero__content">
-      <p class="eyebrow">Aspirant Library</p>
+      <p class="eyebrow" id="heroEyebrow">Aspirant Library</p>
       <h1>Peaceful self-study space with effortless seat booking.</h1>
       <p class="lede">Manage memberships, assign seats, and send branded WhatsApp confirmations in seconds. Build focus, not spreadsheets.</p>
       <div class="hero__cta">
@@ -122,15 +121,15 @@
       <div class="contact-cards">
         <div class="contact-card">
           <p class="label">Owner</p>
-          <p class="value">Chirag Kumar</p>
-          <a href="tel:+919991418414" class="contact-link">+91 99914 18414</a>
+          <p class="value" id="ownerName">Chirag Kumar</p>
+          <a href="tel:+919991418414" class="contact-link" id="ownerPhoneLink">+91 99914 18414</a>
         </div>
         <div class="contact-card">
           <p class="label">Address</p>
-          <a href="https://maps.app.goo.gl/VPeGqPzQ6b4gKm616" class="contact-link" target="_blank" rel="noopener">
+          <a href="https://maps.app.goo.gl/VPeGqPzQ6b4gKm616" class="contact-link" target="_blank" rel="noopener" id="addressLink">
             Bighar Rd - Near PWD Office - Fatehabad
           </a>
-          <p class="muted">Open 24x7</p>
+          <p class="muted" id="addressHours">Open 24x7</p>
         </div>
       </div>
     </div>
@@ -172,8 +171,8 @@
           <div class="form-row">
             <label for="phoneNumber">WhatsApp number</label>
             <div class="input-group" style="display: flex;">
-              <span style="padding: 8px 12px; background: #f3f4f6; border: 1px solid #d1d5db; border-right: none; border-radius: 4px 0 0 4px;">+91</span>
-              <input id="phoneNumber" name="phoneNumber" style="border-left: none; border-radius: 0 4px 4px 0;" placeholder="98765 43210" pattern="[0-9 ]{10,11}" required />
+              <span id="phonePrefix" aria-hidden="true" style="padding: 8px 12px; background: #f3f4f6; border: 1px solid #d1d5db; border-right: none; border-radius: 4px 0 0 4px;">+91</span>
+              <input id="phoneNumber" name="phoneNumber" inputmode="tel" style="border-left: none; border-radius: 0 4px 4px 0;" placeholder="98765 43210" pattern="[0-9+()\- ]{6,20}" required />
             </div>
           </div>
           <div class="form-row">
@@ -208,7 +207,7 @@
             </select>
           </div>
           <div class="form-row">
-            <label for="amount">Fee collected (₹)</label>
+            <label for="amount">Fee collected (?)</label>
             <input id="amount" name="amount" type="number" min="0" step="50" placeholder="1500" />
           </div>
           <button type="submit" class="btn primary stretch">Assign Seat &amp; Generate Receipt</button>
@@ -229,24 +228,24 @@
     <section id="receipt" class="section">
       <div class="panel receipt-panel">
         <div class="receipt-printable" id="receiptPrintable">
-          <header class="receipt-header" style="max-width: 800px; margin: 0 auto; background: #fff;">
-            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #e5e7eb; padding-bottom: 1.5rem;">
+          <header class="receipt-header" style="max-width: 820px; margin: 0 auto; background: #fff;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e6eef6; padding-bottom: 1rem; gap: 1rem;">
               <div style="display: flex; align-items: center; gap: 1rem;">
-                <img src="assets/logo.jpg" alt="Aspirant Library logo" style="width: 64px; height: auto;" />
+                <img src="assets/logo.jpg" alt="Aspirant Library logo" style="width: 64px; height: auto;" id="receiptLogo" />
                 <div>
-                  <h2 style="margin: 0; font-size: 1.5rem; color: #1f2937;">Aspirant Library</h2>
-                  <p style="margin: 0.25rem 0 0 0; color: #6b7280;">Learn. Explore. Achieve.</p>
+                  <h2 style="margin: 0; font-size: 1.25rem; color: #0f172a;" id="receiptName">Aspirant Library</h2>
+                  <p style="margin: 0.25rem 0 0 0; color: #6b7280; font-size: 0.95rem;" id="receiptTagline">Peaceful study space · Focused learning</p>
                 </div>
               </div>
-              <div style="text-align: right;">
-                <h3 style="margin: 0; font-size: 1rem; color: #4b5563;">Digital Receipt</h3>
-                <p style="margin: 0.25rem 0 0 0; color: #6b7280;">Owner: Chirag Kumar</p>
-                <a href="tel:+919991418414" style="color: #3b82f6; text-decoration: none;">+91 99914 18414</a>
+              <div style="text-align: right; min-width: 160px;">
+                <h3 style="margin: 0; font-size: 1rem; color: #374151;">Receipt</h3>
+                <p style="margin: 0.25rem 0 0 0; color: #6b7280;" id="receiptOwner">Issued by: Chirag Kumar</p>
+                <a href="tel:+919991418414" style="color: #0ea5e9; text-decoration: none; font-weight: 600;" id="receiptPhoneLink">+91 99914 18414</a>
               </div>
             </div>
-            <p style="margin: 0.75rem 0 0 0; color: #6b7280; text-align: center;">
-              <a href="https://maps.app.goo.gl/VPeGqPzQ6b4gKm616" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">
-                Bighar Rd, near PWD office, Jagjivan Pura, Fatehabad • Open 24x7
+            <p style="margin: 0.5rem 0 0 0; color: #6b7280; text-align: center; font-size: 0.95rem;">
+              <a href="https://maps.app.goo.gl/VPeGqPzQ6b4gKm616" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;" id="receiptMapLink">
+                Bighar Rd, near PWD office, Jagjivan Pura, Fatehabad — Open 24x7
               </a>
             </p>
           </header>
@@ -279,7 +278,7 @@
   </main>
 
   <footer class="footer">
-    <p>&copy; <span id="year"></span> Aspirant Library - Designed for focused exam prep.</p>
+    <p>&copy; <span id="year"></span> <span id="footerName">Aspirant Library</span> - Designed for focused exam prep.</p>
   </footer>
 
   <template id="receipt-template">
@@ -295,7 +294,7 @@
       </div>
 
       <!-- Main Details Table -->
-      <table style="width: 100%; border-collapse: separate; border-spacing: 0 0.5rem;">
+  <table class="receipt-table" style="width: 100%; border-collapse: separate; border-spacing: 0 0.5rem;">
         <tr>
           <td style="width: 25%; padding: 0.75rem; background: #f3f4f6; border-radius: 4px;">Student Name</td>
           <td style="width: 25%; padding: 0.75rem;" data-field="studentName"></td>
@@ -321,9 +320,9 @@
       </table>
 
       <!-- Footer Note -->
-      <div style="margin-top: 2rem; padding-top: 1rem; border-top: 2px solid #e5e7eb; text-align: center;">
-        <p style="margin: 0; color: #6b7280; font-size: 0.875rem;">
-          Keep this receipt for entry verification or present the WhatsApp confirmation at the front desk.
+      <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e6eef6; text-align: center;">
+        <p style="margin: 0; color: #6b7280; font-size: 0.92rem;">
+          Please retain this receipt for record and entry verification. For queries contact the owner at the number above.
         </p>
       </div>
     </div>
@@ -331,8 +330,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  
-    
+  <script>
     // Initialize PDF libraries
     window.addEventListener('DOMContentLoaded', function() {
       if (!window.html2canvas) {
@@ -345,13 +343,14 @@
       }
     });
   </script>
-  
 <script>
-  window.ASPIRANT_API_BASE = 'https://aspirant-library-server.onrender.com/api';
+  // Use relative /api path when served from same host (works on localhost and Render)
+  window.ASPIRANT_API_BASE = '/api';
+  window.LIBRARY_CONFIG = window.LIBRARY_CONFIG || {};
+  // Example overrides:
+  // window.LIBRARY_CONFIG = { name: 'Your Library', countryDialCode: '+1', currency: 'USD' };
 </script>
 <script src="app.js" defer></script>
-
-
 
   
   <!-- Fallback print function -->
@@ -372,4 +371,3 @@
   </script>
 </body>
 </html>
-

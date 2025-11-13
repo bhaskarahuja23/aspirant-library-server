@@ -1,15 +1,25 @@
 ﻿const TOTAL_SEATS = 75;
 const API_BASE =
   window.ASPIRANT_API_BASE ||
-  'https://aspirant-library-server.onrender.com/api';
+  '/api';
+const libraryOverrides = (typeof window !== 'undefined' && window.LIBRARY_CONFIG) || {};
 const LIBRARY = {
   name: 'Aspirant Library',
   tagline: 'Learn. Explore. Achieve.',
   owner: 'Chirag Kumar',
   phone: '+91 99914 18414',
   address: 'Bighar Rd, near PWD office, Jagjivan Pura, Fatehabad, Haryana 125050',
+  shortAddress: 'Bighar Rd, Fatehabad',
   mapUrl: 'https://maps.app.goo.gl/VPeGqPzQ6b4gKm616',
   hours: 'Open 24x7',
+  logo: 'assets/logo.jpg',
+  countryDialCode: '+91',
+  nationalPhoneLength: 10,
+  examplePhone: '98765 43210',
+  locale: 'en-IN',
+  currency: 'INR',
+  receiptPrefix: 'AL',
+  ...libraryOverrides,
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -27,25 +37,182 @@ const adminList = $('#admin-list');
 const refreshSeatsBtn = $('#refreshSeats');
 const form = $('#seat-form');
 
+const getLocale = () => {
+  if (LIBRARY.locale) return LIBRARY.locale;
+  if (typeof navigator !== 'undefined' && navigator.language) {
+    return navigator.language;
+  }
+  return 'en-US';
+};
+
+const getCurrency = () => LIBRARY.currency || 'USD';
+
+const getDialCodeDigits = () => (LIBRARY.countryDialCode || '').replace(/\D/g, '');
+
+const getDialCodeDisplay = () => {
+  if (LIBRARY.countryDialCode) return LIBRARY.countryDialCode;
+  const match = (LIBRARY.phone || '').match(/\+\d+/);
+  return match ? match[0] : '';
+};
+
+const formatTelHref = (value) => {
+  if (!value) return null;
+  const cleaned = value.trim().replace(/[^0-9+]/g, '');
+  if (!cleaned) return null;
+  return cleaned.startsWith('+') ? `tel:${cleaned}` : `tel:+${cleaned}`;
+};
+
+const formatPhoneDisplay = (digits) => {
+  if (!digits) return '';
+  const dialDigits = getDialCodeDigits();
+  if (dialDigits && digits.startsWith(dialDigits)) {
+    const national = digits.slice(dialDigits.length);
+    if (typeof LIBRARY.formatPhoneDisplay === 'function') {
+      return LIBRARY.formatPhoneDisplay({ dialCode: `+${dialDigits}`, national, digits });
+    }
+    if (dialDigits === '91' && national.length === 10) {
+      return `+${dialDigits} ${national.replace(/(\d{5})(\d{5})/, '$1 $2')}`;
+    }
+    return national ? `+${dialDigits} ${national}` : `+${dialDigits}`;
+  }
+  return `+${digits}`;
+};
+
+const normalizePhoneNumber = (input) => {
+  const digits = (input || '').replace(/\D/g, '');
+  if (!digits) return { digits: '', display: '' };
+  let normalized = digits.replace(/^00/, '');
+  const dialDigits = getDialCodeDigits();
+  const nationalLength = Number(LIBRARY.nationalPhoneLength) || null;
+  if (dialDigits && nationalLength) {
+    const hasDialCode = normalized.startsWith(dialDigits);
+    if (!hasDialCode && normalized.length === nationalLength) {
+      normalized = `${dialDigits}${normalized}`;
+    }
+  }
+  return {
+    digits: normalized,
+    display: formatPhoneDisplay(normalized),
+  };
+};
+
+const getReceiptPrefix = () => {
+  if (LIBRARY.receiptPrefix) {
+    return String(LIBRARY.receiptPrefix).toUpperCase();
+  }
+  if (LIBRARY.name) {
+    const initials = LIBRARY.name.match(/\b([A-Za-z])/g);
+    if (initials && initials.length) {
+      return initials.join('').slice(0, 3).toUpperCase();
+    }
+  }
+  return 'LIB';
+};
+
+const hydrateLibraryDetails = () => {
+  if (typeof document === 'undefined') return;
+  const originalTitle = document.title || '';
+  if (LIBRARY.name) {
+    const suffix = originalTitle.includes('|')
+      ? originalTitle
+          .split('|')
+          .slice(1)
+          .map((part) => part.trim())
+          .filter(Boolean)
+          .join(' | ') || 'Seat Management'
+      : 'Seat Management';
+    document.title = suffix ? `${LIBRARY.name} | ${suffix}` : LIBRARY.name;
+  }
+  const setText = (id, value) => {
+    if (value == null) return;
+    const el = document.getElementById(id);
+    if (el) {
+      el.textContent = value;
+    }
+  };
+  setText('brandName', LIBRARY.name);
+  setText('brandTagline', LIBRARY.tagline);
+  setText('heroEyebrow', LIBRARY.name);
+  setText('ownerName', LIBRARY.owner);
+  setText('addressHours', LIBRARY.hours);
+  setText('topHours', LIBRARY.hours);
+  setText('receiptName', LIBRARY.name);
+  setText('receiptTagline', LIBRARY.tagline);
+  setText('footerName', LIBRARY.name);
+
+  const brandLogo = document.getElementById('brandLogo');
+  const receiptLogo = document.getElementById('receiptLogo');
+  [brandLogo, receiptLogo].forEach((img) => {
+    if (!img || !LIBRARY.logo) return;
+    img.src = LIBRARY.logo;
+    img.alt = `${LIBRARY.name} logo`;
+  });
+
+  const telHref = formatTelHref(LIBRARY.phone);
+  const updatePhoneLink = (id, prefix = '') => {
+    const link = document.getElementById(id);
+    if (!link) return;
+    if (telHref) {
+      link.href = telHref;
+    } else {
+      link.removeAttribute('href');
+    }
+    link.textContent = LIBRARY.phone ? `${prefix}${LIBRARY.phone}` : '';
+  };
+  ['ownerPhoneLink', 'receiptPhoneLink'].forEach((id) => updatePhoneLink(id));
+  updatePhoneLink('topPhoneLink', 'Call: ');
+
+  const ownerLabel = document.getElementById('receiptOwner');
+  if (ownerLabel) {
+    ownerLabel.textContent = LIBRARY.owner ? `Owner: ${LIBRARY.owner}` : '';
+  }
+
+  const prefixEl = document.getElementById('phonePrefix');
+  const dialPrefix = getDialCodeDisplay() || '+';
+  if (prefixEl) {
+    prefixEl.textContent = dialPrefix;
+  }
+  const phoneInput = document.getElementById('phoneNumber');
+  if (phoneInput) {
+    phoneInput.placeholder = LIBRARY.examplePhone || '';
+  }
+
+  const updateMapLink = (id, text) => {
+    const link = document.getElementById(id);
+    if (!link) return;
+    if (LIBRARY.mapUrl) {
+      link.href = LIBRARY.mapUrl;
+    } else {
+      link.removeAttribute('href');
+    }
+    link.textContent = text ?? '';
+  };
+  const shortAddress = LIBRARY.shortAddress ?? LIBRARY.address ?? '';
+  updateMapLink('topAddressLink', shortAddress ? `Visit: ${shortAddress}` : '');
+  updateMapLink('addressLink', LIBRARY.address || '');
+  const mapText = [LIBRARY.address, LIBRARY.hours].filter(Boolean).join(' - ');
+  updateMapLink('receiptMapLink', mapText);
+};
+
 let seats = Array.from({ length: TOTAL_SEATS }, (_, idx) => createSeat(idx + 1));
 let latestReceipt = null;
 
 const formatDate = (isoString) =>
-  new Intl.DateTimeFormat('en-IN', {
+  new Intl.DateTimeFormat(getLocale(), {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(new Date(isoString));
 
 const formatDateOnly = (isoString) =>
   isoString
-    ? new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium' }).format(new Date(isoString))
-    : '—';
+    ? new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium' }).format(new Date(isoString))
+    : '-';
 
 const formatCurrency = (amount) => {
-  if (!amount && amount !== 0) return '—';
-  return new Intl.NumberFormat('en-IN', {
+  if (!amount && amount !== 0) return '-';
+  return new Intl.NumberFormat(getLocale(), {
     style: 'currency',
-    currency: 'INR',
+    currency: getCurrency(),
   }).format(amount);
 };
 
@@ -258,7 +425,7 @@ const updateHero = () => {
   const occupied = seats.filter((seat) => seat.studentName).length;
   heroSeatCount.textContent = `${occupied} / ${TOTAL_SEATS}`;
   heroSeatMeter.style.width = `${(occupied / TOTAL_SEATS) * 100}%`;
-  heroLastUpdate.textContent = new Intl.DateTimeFormat('en-IN', {
+  heroLastUpdate.textContent = new Intl.DateTimeFormat(getLocale(), {
     hour: 'numeric',
     minute: 'numeric',
   }).format(new Date());
@@ -315,20 +482,23 @@ const buildReceiptPayload = (formData) => {
   const seatNumber = Number(formData.get('seatNumber'));
   const studentName = formData.get('studentName').trim();
   const rawPhoneNumber = formData.get('phoneNumber').trim();
-  const phoneNumber = '+91 ' + rawPhoneNumber.replace(/[^0-9]/g, '').replace(/(\d{5})(\d{5})/, '$1 $2');
+  const normalizedPhone = normalizePhoneNumber(rawPhoneNumber);
+  if (!normalizedPhone.display) {
+    throw new Error('Enter a valid phone number (include the country/area code if needed).');
+  }
   const gender = formData.get('gender');
   const amount = Number(formData.get('amount')) || null;
   const startDate = formData.get('startDate');
   const endDate = formData.get('endDate');
   const issuedAt = new Date().toISOString();
-  const receiptId = `AL-${seatNumber}-${Math.floor(Math.random() * 9000 + 1000)}`;
+  const receiptId = `${getReceiptPrefix()}-${seatNumber}-${Math.floor(Math.random() * 9000 + 1000)}`;
   const startDateFormatted = formatDateOnly(startDate);
 
   const plan = formData.get('plan');
   return {
     seatNumber,
     studentName,
-    phoneNumber,
+    phoneNumber: normalizedPhone.display,
     gender,
     plan,
     amount,
@@ -337,7 +507,8 @@ const buildReceiptPayload = (formData) => {
     startDateFormatted,
     issuedAt,
     receiptId,
-    phoneDisplay: phoneNumber,
+    phoneDisplay: normalizedPhone.display,
+    phoneDigits: normalizedPhone.digits,
   };
 };
 
@@ -383,7 +554,7 @@ const buildReceiptText = (data) =>
     '',
   ].join('\n');
 
-const cleanPhoneForWhatsApp = (input) => input.replace(/[^0-9]/g, '');
+const cleanPhoneForWhatsApp = (input) => normalizePhoneNumber(input).digits;
 
 const ensureHtml2Canvas = () => {
   // html2canvas may be exposed as a global function or as a default export
@@ -473,9 +644,11 @@ const downloadReceiptPdf = async () => {
     setStatus('Could not generate PDF. Trying print dialog...', 'error');
     window.printReceipt();
   }
-};const sendWhatsApp = async () => {
+};
+
+const sendWhatsApp = async () => {
   if (!latestReceipt) return;
-  const number = cleanPhoneForWhatsApp(latestReceipt.phoneNumber);
+  const number = latestReceipt.phoneDigits || cleanPhoneForWhatsApp(latestReceipt.phoneNumber);
   if (!number) {
     alert('Enter a valid WhatsApp number to send the receipt.');
     return;
@@ -528,6 +701,7 @@ const syncSeats = async ({ silent } = {}) => {
 };
 
 const init = () => {
+  hydrateLibraryDetails();
   renderAll();
   prefillToday();
   yearEl.textContent = new Date().getFullYear();
