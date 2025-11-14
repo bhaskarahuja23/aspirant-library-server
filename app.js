@@ -651,8 +651,8 @@ const downloadReceiptPdf = async () => {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     
-    // Calculate dimensions to fit page with margins
-    const margin = 40;
+    // Calculate dimensions to fit page with slimmer margins
+    const margin = 12;
     const availableWidth = pdfWidth - (margin * 2);
     const availableHeight = pdfHeight - (margin * 2);
     
