@@ -31,9 +31,6 @@ const seatSchema = new mongoose.Schema({
   gender: { type: String, default: null },
 }, { timestamps: true });
 
-// Ensure unique index on seatNumber
-seatSchema.index({ seatNumber: 1 }, { unique: true });
-
 const Seat = mongoose.model('Seat', seatSchema);
 
 // Connect to MongoDB
