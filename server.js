@@ -17,6 +17,9 @@ const PORT = process.env.PORT || 4000;
 const TOTAL_SEATS = Number(process.env.TOTAL_SEATS) || 75;
 const MONGODB_URI = process.env.MONGODB_URI;
 
+// Track server start time for uptime calculation
+const serverStartTime = Date.now();
+
 // Seat Schema & Model
 const seatSchema = new mongoose.Schema({
   seatNumber: { type: Number, required: true, unique: true },
@@ -56,7 +59,9 @@ const connectDB = async () => {
   }
 };
 
-// Seed/migrate seats
+// Seed/migrate seats ONLY if database is empty
+// This ensures we don't duplicate seats on every restart
+// Idempotent: safe to call multiple times
 const ensureSeats = async () => {
   if (!dbConnected) {
     console.log('⚠ Skipping seat initialization - database not connected');
@@ -64,10 +69,11 @@ const ensureSeats = async () => {
   }
 
   try {
+    // Check if seats already exist - skip if any found
     const count = await Seat.countDocuments();
     
     if (count > 0) {
-      console.log(`✅ Found ${count} existing seats in database`);
+      console.log(`✅ Found ${count} existing seats in database - skipping initialization`);
       return;
     }
 
@@ -145,11 +151,21 @@ const ensureSeats = async () => {
   }
 };
 
-// Healthcheck
+// Health endpoint for uptime monitoring (UptimeRobot, etc.)
+// Returns server status, uptime, and database connection state
+// Keeps service awake on Render free tier when pinged regularly
 app.get('/health', (req, res) => {
+  // Calculate uptime in seconds
+  const uptimeSeconds = (Date.now() - serverStartTime) / 1000;
+  
+  // Check MongoDB connection state
+  // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  
   res.json({
     ok: true,
-    db: dbConnected ? 'connected' : 'disconnected'
+    uptime: Math.round(uptimeSeconds * 100) / 100, // Round to 2 decimal places
+    db: dbStatus
   });
 });
 
